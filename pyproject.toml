@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentprint"
+version = "0.1.0"
+description = "Snapshot dotfiles, configs, PATH dirs and global packages before a coding-agent session; diff and revert what changed outside the repo."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Jatin Garg"}]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+agentprint = "agentprint.cli:main"
+
+[tool.setuptools]
+packages = ["agentprint"]

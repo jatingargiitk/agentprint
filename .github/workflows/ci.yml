@@ -1,0 +1,24 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install .
+      - run: python -m unittest discover -s tests -v
+      - name: End-to-end smoke test in a temp home
+        run: |
+          export AGENTPRINT_HOME="$(mktemp -d)"
+          echo 'export EDITOR=vim' > "$AGENTPRINT_HOME/.bashrc"
+          agentprint snap
+          agentprint diff
+          agentprint run --check -- sh -c 'echo "export AGENT=1" >> "$AGENTPRINT_HOME/.bashrc"' || test $? -eq 1
+          agentprint revert --yes
+          agentprint diff
