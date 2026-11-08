@@ -190,6 +190,8 @@ class SecretTest(Base):
         self.assertEqual(core._content_info(b"export GITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwxyz123\n", "~/.zshrc")[1], "secret")
         self.assertEqual(core._content_info(b"alias gs='git status'\n", "~/.zshrc"), ("alias gs='git status'\n", None))
         self.assertEqual(core._content_info(b"\x00\x01", "~/bin/x")[1], "binary")
+        self.assertEqual(core._content_info(b"users:\n- user:\n    client-key-data: LS0tLS1\n", "~/.kube/config")[1], "secret")
+        self.assertEqual(core._content_info(b"[default]\naws_secret_access_key = abcdEFGH1234\n", "~/.aws/config")[1], "secret")
 
 
 class RevertTest(Base):

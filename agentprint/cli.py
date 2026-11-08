@@ -68,10 +68,14 @@ def _ctx(args):
     return home, core.resolve_store(home, args.store)
 
 
+def _n(count, word):
+    return "%d %s%s" % (count, word, "" if count == 1 else "s")
+
+
 def _snap_summary(snap):
     files = snap["files"]
     hidden = sum(1 for e in files.values() if e.get("note") == "secret")
-    parts = ["snapshot %s: %d files under %d watched paths" % (snap["id"], len(files), len(snap["roots"]))]
+    parts = ["snapshot %s: %s under %d watched paths" % (snap["id"], _n(len(files), "file"), len(snap["roots"]))]
     if snap["commands"] is not None:
         names = sorted(snap["commands"])
         parts.append("commands recorded: %s" % (", ".join(names) if names else "none available"))
@@ -96,7 +100,7 @@ def cmd_list(args):
         print("no snapshots in %s" % store)
         return 0
     for s in snaps:
-        print("%-32s %s  %d files" % (s["id"], s["created"].split(".")[0].replace("T", " "), len(s["files"])))
+        print("%-28s %s  %s" % (s["id"], s["created"].split(".")[0].replace("T", " "), _n(len(s["files"]), "file")))
     return 0
 
 
@@ -182,7 +186,7 @@ def cmd_run(args):
     print("agentprint: command exited with status %d" % rc, file=sys.stderr)
     sys.stderr.flush()
     print(core.format_diff(d))
-    if core.diff_has_changes(d):
+    if d["changes"]:
         print("\nundo file changes with: agentprint revert %s" % snap["id"])
     if rc == 0 and args.check and core.diff_has_changes(d):
         return 1

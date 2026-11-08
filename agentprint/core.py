@@ -72,6 +72,7 @@ SECRET_CONTENT = re.compile(
     r"|\bAKIA[0-9A-Z]{16}\b"
     r"|\bxox[abprs]-[A-Za-z0-9-]{10,}"
     r"|\bnpm_[A-Za-z0-9]{20,}"
+    r"|(?i:client-key-data|private[_-]?key)[\"']?\s*[:=]"
     r"|(?i:(?:api[_-]?key|secret|token|passw(?:or)?d|auth)[A-Za-z0-9_]*[\"']?\s*[:=]\s*[\"']?[^\s\"'#]{8,})"
 )
 
@@ -400,7 +401,7 @@ def _file_patch(key, a, b):
     if (a or {}).get("sha256") != (b or {}).get("sha256"):
         hidden = [e.get("note") for e in (a, b) if e and e.get("sha256") and e.get("content") is None]
         if hidden:
-            lines.append("(contents not shown: %s; sha256 %s -> %s)" % (
+            lines.append("(%s; sha256 %s -> %s)" % (
                 _note_text(hidden[0]),
                 ((a or {}).get("sha256") or "none")[:12],
                 ((b or {}).get("sha256") or "none")[:12]))
